@@ -14,7 +14,7 @@
   end
 
   # get R modules
-  m_cmd = "bash -il -c 'module -t avail R/ |& grep ^R/' 2>/dev/null"
+  m_cmd = "bash -il -c 'module -t avail R/ |& grep ^R/ | sort | uniq' 2>/dev/null"
   begin
     output, status = Open3.capture2e(m_cmd)
     if status.success?
@@ -28,7 +28,7 @@
   end
 -%>
 ---
-cluster: "sherlock"
+cluster: "scicore"
 
 form:
   - sh_r_version
@@ -39,6 +39,8 @@ form:
   - sh_mem
   - bc_num_hours
   - bc_email_on_started
+  - bc_reservation
+
 
 attributes:
 
@@ -46,7 +48,6 @@ attributes:
     label: "Additional modules (optional)"
     help: |
         <small>Space separated list of additional modules to load</br/>
-        Full list at https://www.sherlock.stanford.edu/docs/software/list </small>
 
   sh_r_version:
     label: "R version"
@@ -111,3 +112,8 @@ attributes:
 
   bc_num_hours:
     label: "Runtime (in hours)"
+
+  bc_reservation:
+    label: "Especial resource reservation (granted by sciCORE)"
+    widget: text_field
+    value: ""

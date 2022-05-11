@@ -8,7 +8,9 @@
 module reset
 
 # Load the rstudio module (required)
-module load rstudio
+#module load RStudio-Server/2021.09.3-396-foss-2021a-Java-11-R-4.2.0
+module load RStudio-Server/1.4.1717-foss-2021a-Java-11-R-4.1.2
+
 
 # Load the requested R module (required)
 module load <%= context.sh_r_version %>
@@ -26,6 +28,11 @@ module load <%= context.sh_modules %>
 # PAM auth helper used by RStudio
 export RSTUDIO_AUTH="${PWD}/bin/auth"
 
+export RSTUDIO_DB_PATH="${PWD}"
+export RSTUDIO_DB_CONF="${PWD}/rstudio.db"
+echo "provider=sqlite" > ${RSTUDIO_DB_CONF}
+echo "directory=${RSTUDIO_DB_PATH}" >> ${RSTUDIO_DB_CONF}
+
 # Generate an `rsession` wrapper script
 export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
 (
@@ -37,6 +44,11 @@ sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
   export RSESSION_LOG_FILE="${PWD}/rsession.log"
   exec &>>"\${RSESSION_LOG_FILE}"
 
+  source /etc/profile
+  export R_LIBS_SITE="${R_LIBS_SITE}"
+  export MODULEPATH_ROOT="$MODULEPATH_ROOT"
+  export MODULEPATH="$MODULEPATH"
+  export LMOD_PKG="$LMOD_PKG"
   # Launch the original command
   echo "Launching rsession..."
   set -x
@@ -51,11 +63,13 @@ cd "${HOME}"
 # Launch the RStudio Server
 echo "Starting up rserver..."
 set -x
+
 rserver \
   --www-port ${port} \
   --auth-none 0 \
-  --auth-pam-helper-path "${RSTUDIO_AUTH}" \
   --auth-encrypt-password 0 \
+  --www-frame-origin=same \
+  --auth-pam-helper-path "${RSTUDIO_AUTH}" \
+  --database-config-file "${RSTUDIO_DB_CONF}" \
   --rsession-path "${RSESSION_WRAPPER_FILE}" \
-  --server-data-dir "${TMPDIR}" \
-  --secure-cookie-key-file "${TMPDIR}/rstudio-server/secure-cookie-key" 2>&1
+  --server-data-dir "${TMPDIR}"  2>&1

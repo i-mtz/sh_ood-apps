@@ -4,8 +4,8 @@ category: Interactive Apps
 subcategory: Servers
 role: batch_connect
 description: |
-  This app will launch [RStudio Server] an IDE for [R] on [Sherlock].
+  This app will launch [RStudio Server] an IDE for [R] on [sciCORE].
   
   [RStudio Server]: https://www.rstudio.com/products/rstudio-server/
   [R]: https://www.r-project.org/
-  [Sherlock]: https://www.sherlock.stanford.edu
+  [sciCORE]: https://scicore.unibas.ch
