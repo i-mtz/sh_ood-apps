@@ -14,7 +14,7 @@
   end
 
   # get R modules
-  m_cmd = "bash -il -c 'module -t avail R/ |& grep ^R/ | sort | uniq' 2>/dev/null"
+  m_cmd = "bash -il -c 'module -t avail R/ |& grep ^R/ | grep foss-2021a| sort | uniq' 2>/dev/null"
   begin
     output, status = Open3.capture2e(m_cmd)
     if status.success?
